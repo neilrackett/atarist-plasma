@@ -1,7 +1,5 @@
 CC      = m68k-atari-mint-gcc
 AS      = m68k-atari-mint-as
-# CFLAGS  = -O2 -fomit-frame-pointer -m68000
-# LDFLAGS = -m68000
 LIBCMINI = /freemint/libcmini/lib
 CFLAGS = -O2 -fomit-frame-pointer -s -std=gnu99 -I/freemint/libcmini/include -m68000
 LDFLAGS = -s -nostdlib -L$(LIBCMINI) $(LIBCMINI)/crt0.o -m68000
@@ -10,15 +8,20 @@ LIBS    = -lcmini -lgcc -lm
 SRCDIR = src
 BUILDDIR = build
 OBJDIR   = obj
-OBJS = $(OBJDIR)/main.o $(OBJDIR)/render_scanlines.o
-TARGET = PLASMA.TOS
-DEPS = $(OBJS:.o=.d)
+OBJS_PLASMA1 = $(OBJDIR)/plasma1.o $(OBJDIR)/render_scanlines.o
+OBJS_PLASMA2 = $(OBJDIR)/plasma2.o $(OBJDIR)/render_scanlines.o
+TARGETS = $(BUILDDIR)/PLASMA1.TOS $(BUILDDIR)/PLASMA2.TOS
+DEPS = $(OBJS_PLASMA1:.o=.d) $(OBJS_PLASMA2:.o=.d)
 
-all: $(TARGET)
+all: $(TARGETS)
 
-$(TARGET): $(OBJS)
+$(BUILDDIR)/PLASMA1.TOS: $(OBJS_PLASMA1)
 	@mkdir -p $(BUILDDIR)
-	$(CC) $(LDFLAGS) $(OBJS) $(LIBS) -o $(BUILDDIR)/$(TARGET)
+	$(CC) $(LDFLAGS) $(OBJS_PLASMA1) $(LIBS) -o $@
+
+$(BUILDDIR)/PLASMA2.TOS: $(OBJS_PLASMA2)
+	@mkdir -p $(BUILDDIR)
+	$(CC) $(LDFLAGS) $(OBJS_PLASMA2) $(LIBS) -o $@
 
 $(OBJDIR)/%.o: ${SRCDIR}/%.c
 	@mkdir -p $(OBJDIR)
@@ -33,4 +36,5 @@ $(OBJDIR)/%.o: ${SRCDIR}/%.s
 -include $(DEPS)
 
 clean:
-	rm -f $(OBJS) $(DEPS) $(BUILDDIR)/$(TARGET)
+	rm -f $(OBJS_PLASMA1) $(OBJS_PLASMA2) $(DEPS) \
+		$(BUILDDIR)/PLASMA1.TOS $(BUILDDIR)/PLASMA2.TOS
