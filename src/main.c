@@ -38,6 +38,10 @@ extern void render_scanlines();
 #define COOKIE_MCH 0x5f4d4348L
 #define MCH_MEGA_STE 0x0005L
 
+#define MODE_COUNT 4
+
+static int current_mode = 0;
+
 static int get_cookie(long id, long *value)
 {
   long *jar = *(long **)COOKIE_JAR_ADDRESS;
@@ -227,8 +231,17 @@ static void hsv_to_rgb_4bit(uint8_t h, uint8_t s, uint8_t v, int *r, int *g, int
   *b = (int)((bb * 15 + 127) / 255);
 }
 
-static void update_plasma_colors(int mode)
+static void clear_palette()
 {
+  int i;
+  for (i = 1; i < COLOR_REGS - 1; i++)
+    Setcolor(i, 0x000);
+}
+
+static void set_mode(int mode)
+{
+  clear_palette();
+
   int x, y;
   uint8_t center[3];
   int max_morton = morton2_encode(COLUMN_COUNT - 1, SCREEN_HEIGHT - 1);
@@ -371,14 +384,14 @@ static void update_plasma_colors(int mode)
     // Palette 15 reserved for text
     plasma_colors[row_offset + COLOR_REGS - 1] = to_ste(2, 2, 2);
   }
+
+  current_mode = mode;
 }
 
 int main()
 {
   void *old_stack = (void *)Super(0);
   void *old_screen = (void *)Physbase();
-  int current_mode = 0;
-  const int mode_count = 4;
 
   if (is_megaste())
     *(volatile uint8_t *)0xFFFF8E21 = 0x03; /* Mega STE 16MHz with cache */
@@ -402,14 +415,12 @@ int main()
   Bconout(2, 32 + 13);
   printf("Are you ready?\n");
 
-  update_plasma_colors(current_mode);
+  set_mode(current_mode);
 
   draw_square_to_buffer(screen_buffer);
 
   /* Hide coloured bars until render loop */
-  int c;
-  for (c = 0; c < 16; c++)
-    Setcolor(c, 0x000);
+  clear_palette();
 
   blit_buffer_to_screen(screen_buffer, (uint16_t *)Physbase());
 
@@ -417,9 +428,9 @@ int main()
   Cconws("\033Y");
   Bconout(2, 32 + 22);
   Bconout(2, 32 + 0);
-  printf("1-4\n");
-  printf("Space\n");
-  printf("Esc\n");
+  printf("1-4\r\n");
+  printf("Space\r\n");
+  printf("Esc\r\n");
 
   ikbd_off();
 
@@ -439,28 +450,24 @@ int main()
       int ascii = ch & 0xff;
       if (ascii == '1')
       {
-        current_mode = 0;
-        update_plasma_colors(current_mode);
+        set_mode(0);
       }
       else if (ascii == '2')
       {
-        current_mode = 1;
-        update_plasma_colors(current_mode);
+        set_mode(1);
       }
       else if (ascii == '3')
       {
-        current_mode = 2;
-        update_plasma_colors(current_mode);
+        set_mode(2);
       }
       else if (ascii == '4')
       {
-        current_mode = 3;
-        update_plasma_colors(current_mode);
+        set_mode(3);
       }
       else if (ascii == ' ')
       {
-        current_mode = (current_mode + 1) % mode_count;
-        update_plasma_colors(current_mode);
+        current_mode = (current_mode + 1) % MODE_COUNT;
+        set_mode(current_mode);
       }
       else if (ascii == 27)
       {

@@ -1,8 +1,11 @@
 CC      = m68k-atari-mint-gcc
 AS      = m68k-atari-mint-as
-CFLAGS  = -O2 -fomit-frame-pointer -m68000
-LDFLAGS = -m68000
-LIBS    = -lm
+# CFLAGS  = -O2 -fomit-frame-pointer -m68000
+# LDFLAGS = -m68000
+LIBCMINI = /freemint/libcmini/lib
+CFLAGS = -O2 -fomit-frame-pointer -s -std=gnu99 -I/freemint/libcmini/include -m68000
+LDFLAGS = -s -nostdlib -L$(LIBCMINI) $(LIBCMINI)/crt0.o -m68000
+LIBS    = -lcmini -lgcc -lm
 
 SRCDIR = src
 BUILDDIR = build
