@@ -36,7 +36,7 @@ extern void render_scanlines();
 
 #define COOKIE_JAR_ADDRESS 0x5a0
 #define COOKIE_MCH 0x5f4d4348L
-#define MCH_MEGA_STE 0x0005L
+#define MCH_MEGA_STE 0x00010010L
 
 #define MODE_COUNT 4
 
