@@ -8,8 +8,14 @@ Animation coming... soon? Maybe.
 
 ## Controls
 
+### PLASMA1.TOS
+
 - 1-4: Select visualisation
 - Space: Next visualisation
+- Esc: Quit
+
+### PLASMA2.TOS
+
 - Esc: Quit
 
 ## Build
@@ -20,7 +26,7 @@ The quickest way to build this for yourself is to install [atarist-toolkit-docke
 stcmd make
 ```
 
-Outputs `build/PLASMA.TOS`
+Outputs `PLASMA1.TOS` and `PLASMA2.TOS` in the `build` folder.
 
 ## License
 
