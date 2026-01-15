@@ -10,11 +10,15 @@ Animation coming... soon? Maybe.
 
 ### PLASMA1.TOS
 
+Works on any Atari ST, but looks better on STE
+
 - 1-4: Select visualisation
 - Space: Next visualisation
 - Esc: Quit
 
 ### PLASMA2.TOS
+
+Animated version for Mega STE (works on ST/STE, but flickers badly) 
 
 - Esc: Quit
 
