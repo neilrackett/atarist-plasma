@@ -1,16 +1,16 @@
 # Atari ST Mega Plasma
 
-https://github.com/user-attachments/assets/2058cbde-a425-426b-ab5a-0f65dfe67e24
+Have you ever dreamed of displaying 3,000 colours on screen at once on your Atari STE? Well, a mere 37 years after the STE was released, here's a scanline-blasting plasma demo that will bring your dream to life.
 
-Have you ever dreamed of displaying 3,000 colours on screen at once on your Atari STE? Well, a mere 37 years after the STE was released, here's a scanline-blasting plasma demo that will bring your dream to life. Enjoy.
+Enjoy!
 
-Animation coming... soon? Maybe.
-
-## Controls
+## Apps
 
 ### PLASMA1.TOS
 
-Works on any Atari ST, but looks better on STE
+https://github.com/user-attachments/assets/2058cbde-a425-426b-ab5a-0f65dfe67e24
+
+Computes and renders a range of ~3,000 colour gradients on any Atari STE or Mega STE (or hundreds of colours on a regular ST)
 
 - 1-4: Select visualisation
 - Space: Next visualisation
@@ -18,7 +18,9 @@ Works on any Atari ST, but looks better on STE
 
 ### PLASMA2.TOS
 
-Animated version for Mega STE (works on ST/STE, but flickers badly) 
+https://github.com/user-attachments/assets/ef482a9b-0fc9-4d5d-a82f-7b0813171eec
+
+Animated 3x3 gradient for Atari Mega STE (runs on ST/STE, but flickers badly)
 
 - Esc: Quit
 
