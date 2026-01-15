@@ -30,7 +30,7 @@ _render_scanlines_rows:
     move.w  (%a0)+,28(%a1)
     move.w  (%a0)+,30(%a1)
 
-    moveq   #8,%d6
+    moveq   #3,%d6
     move.w  #198,%d7
 
 .line_loop:
@@ -71,7 +71,7 @@ _render_scanlines_rows:
 
     dbra    %d6,.keep_row
     add.l   #32,%a2
-    moveq   #9,%d6
+    moveq   #4,%d6
 .keep_row:
     dbra    %d7,.line_loop
 
