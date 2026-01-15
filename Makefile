@@ -9,7 +9,7 @@ SRCDIR = src
 BUILDDIR = build
 OBJDIR   = obj
 OBJS_PLASMA1 = $(OBJDIR)/plasma1.o $(OBJDIR)/render_scanlines.o
-OBJS_PLASMA2 = $(OBJDIR)/plasma2.o $(OBJDIR)/render_scanlines.o
+OBJS_PLASMA2 = $(OBJDIR)/plasma2.o $(OBJDIR)/render_scanlines_rows.o
 TARGETS = $(BUILDDIR)/PLASMA1.TOS $(BUILDDIR)/PLASMA2.TOS
 DEPS = $(OBJS_PLASMA1:.o=.d) $(OBJS_PLASMA2:.o=.d)
 

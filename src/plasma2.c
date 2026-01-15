@@ -15,11 +15,10 @@ enum
   SQUARE_LEFT = (SCREEN_WIDTH - SQUARE_WIDTH_PIXELS) / 2,
   SQUARE_RIGHT = SQUARE_LEFT + SQUARE_WIDTH_PIXELS,
   PALETTE_ROWS = 20,
-  PLASMA_FRAME_COUNT = 240,
-  PALETTE_ROW_REPEAT = SCREEN_HEIGHT / PALETTE_ROWS
+  PLASMA_FRAME_COUNT = 240
 };
 
-uint16_t plasma_colors[SCREEN_HEIGHT * COLOR_REGS];
+const uint16_t *plasma_palette_rows;
 static uint16_t screen_buffer[SCREEN_HEIGHT * WORDS_PER_LINE];
 
 #include "plasma2_frames.inc"
@@ -28,11 +27,11 @@ static uint16_t screen_buffer[SCREEN_HEIGHT * WORDS_PER_LINE];
 int original_resolution;
 uint16_t original_palette[COLOR_REGS];
 
-extern void render_scanlines();
+extern void render_scanlines_rows();
 
 #define COOKIE_JAR_ADDRESS 0x5a0
 #define COOKIE_MCH 0x5f4d4348L
-#define MCH_MEGA_STE 0x0005L
+#define MCH_MEGA_STE 0x00010010L
 
 static int get_cookie(long id, long *value)
 {
@@ -138,17 +137,7 @@ static void clear_palette()
 
 static void apply_palette_frame(int frame_index)
 {
-  int y;
-  for (y = 0; y < SCREEN_HEIGHT; y++)
-  {
-    int src_row = y / PALETTE_ROW_REPEAT;
-    int row_offset = y * COLOR_REGS;
-    int color;
-    for (color = 0; color < COLOR_REGS; color++)
-    {
-      plasma_colors[row_offset + color] = plasma_frames[frame_index][src_row][color];
-    }
-  }
+  plasma_palette_rows = &plasma_frames[frame_index][0][0];
 }
 
 int main()
@@ -185,12 +174,6 @@ int main()
 
   blit_buffer_to_screen(screen_buffer, (uint16_t *)Physbase());
 
-  /* Instructions (bottom-left) */
-  Cconws("\033Y");
-  Bconout(2, 32 + 22);
-  Bconout(2, 32 + 0);
-  printf("Esc\r\n");
-
   ikbd_off();
 
   /* 2. CLEAR KEYBOARD BUFFER */
@@ -203,17 +186,14 @@ int main()
   /* 3. RENDER LOOP */
   {
     int frame_index = 0;
-    int frame_tick = 0;
     while (1)
     {
       Vsync();
-      render_scanlines();
-      frame_tick++;
-      if ((frame_tick & 1) == 0)
-      {
-        frame_index = (frame_index + 1) % PLASMA_FRAME_COUNT;
-        apply_palette_frame(frame_index);
-      }
+      render_scanlines_rows();
+
+      frame_index = (frame_index + 1) % PLASMA_FRAME_COUNT;
+      apply_palette_frame(frame_index);
+
       if (Cconis())
       {
         int ch = Cnecin();
