@@ -146,7 +146,17 @@ int main()
   void *old_screen = (void *)Physbase();
 
   if (is_megaste())
+  {
     *(volatile uint8_t *)0xFFFF8E21 = 0x03; /* Mega STE 16MHz with cache */
+  }
+  else
+  {
+    Cconws("This is designed for Mega STE,\r\nso sorry if it looks rubbish on your ST\r\n\r\nPress any key to continue");
+    while (!Cconis())
+    {
+    }
+    Cnecin();
+  }
 
   /* Store original screen resolution and palette */
   original_resolution = Getrez();
