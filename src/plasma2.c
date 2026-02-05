@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdint.h>
 
+#include "megaste.h"
+
 enum
 {
   SCREEN_HEIGHT = 200,
@@ -28,37 +30,6 @@ int original_resolution;
 uint16_t original_palette[COLOR_REGS];
 
 extern void render_scanlines_rows();
-
-#define COOKIE_JAR_ADDRESS 0x5a0
-#define COOKIE_MCH 0x5f4d4348L
-#define MCH_MEGA_STE 0x00010010L
-
-static int get_cookie(long id, long *value)
-{
-  long *jar = *(long **)COOKIE_JAR_ADDRESS;
-
-  if (!jar)
-    return 0;
-
-  while (jar[0])
-  {
-    if (jar[0] == id)
-    {
-      if (value)
-        *value = jar[1];
-      return 1;
-    }
-    jar += 2;
-  }
-
-  return 0;
-}
-
-static int is_megaste(void)
-{
-  long mch = 0;
-  return get_cookie(COOKIE_MCH, &mch) && mch == MCH_MEGA_STE;
-}
 
 void ikbd_off()
 {
@@ -147,7 +118,7 @@ int main()
 
   if (is_megaste())
   {
-    *(volatile uint8_t *)0xFFFF8E21 = 0x03; /* Mega STE 16MHz with cache */
+    megaste_enable_16mhz_cache();
   }
   else
   {
