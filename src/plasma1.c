@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#include "megaste.h"
+#include "atari_megaste.h"
 
 enum
 {
@@ -364,8 +364,7 @@ int main()
   void *old_stack = (void *)Super(0);
   void *old_screen = (void *)Physbase();
 
-  if (is_megaste())
-    megaste_enable_16mhz_cache();
+  megaste_enable_16mhz_cache();
 
   /* Store original screen resolution and palette */
   original_resolution = Getrez();

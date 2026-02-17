@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#include "megaste.h"
+#include "atari_megaste.h"
 
 enum
 {
@@ -116,11 +116,7 @@ int main()
   void *old_stack = (void *)Super(0);
   void *old_screen = (void *)Physbase();
 
-  if (is_megaste())
-  {
-    megaste_enable_16mhz_cache();
-  }
-  else
+  if (megaste_enable_16mhz_cache() != 0)
   {
     Cconws("This is designed for Mega STE,\r\nso sorry if it looks rubbish on your ST\r\n\r\nPress any key to continue");
     while (!Cconis())
