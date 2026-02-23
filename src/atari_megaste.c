@@ -12,7 +12,7 @@ int is_megaste(void)
   return mch == MCH_MEGA_STE;
 }
 
-void megaste_enable_16mhz_cache(void)
+int megaste_enable_16mhz_cache(void)
 {
   if (is_megaste())
   {

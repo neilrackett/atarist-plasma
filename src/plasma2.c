@@ -21,6 +21,7 @@ enum
 };
 
 const uint16_t *plasma_palette_rows;
+int is_fast_cpu = 0;
 static uint16_t screen_buffer[SCREEN_HEIGHT * WORDS_PER_LINE];
 
 #include "plasma2_frames.inc"
@@ -116,13 +117,9 @@ int main()
   void *old_stack = (void *)Super(0);
   void *old_screen = (void *)Physbase();
 
-  if (megaste_enable_16mhz_cache() != 0)
+  if (megaste_enable_16mhz_cache() == 0)
   {
-    Cconws("This is designed for Mega STE,\r\nso sorry if it looks rubbish on your ST\r\n\r\nPress any key to continue");
-    while (!Cconis())
-    {
-    }
-    Cnecin();
+    is_fast_cpu = 1;
   }
 
   /* Store original screen resolution and palette */
