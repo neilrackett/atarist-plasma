@@ -20,7 +20,7 @@ Computes and renders a range of ~3,000 colour gradients on any Atari STE or Mega
 
 <video src="https://github.com/user-attachments/assets/ef482a9b-0fc9-4d5d-a82f-7b0813171eec" width="640" height="400" muted autoplay loop></video>
 
-Animated 3x3 gradient for Atari Mega STE (runs on ST/STE, but flickers badly)
+Animated 3x3 gradient for ~Atari Mega STE~ any ST, STE or Mega STE
 
 - Esc: Quit
 
