@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2026 Neil Rackett
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 static const uint16_t plasma_frames[PLASMA_FRAME_COUNT][PALETTE_ROWS][COLOR_REGS] = {
   {
     {0x000, 0x008, 0x101, 0xa01, 0xb81, 0xc81, 0xd88, 0xe88, 0xf88, 0xf09, 0xf0a, 0xf0b, 0xf05, 0xf86, 0xf8f, 0x111},

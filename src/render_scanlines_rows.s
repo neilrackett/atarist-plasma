@@ -1,3 +1,6 @@
+| Copyright (C) 2026 Neil Rackett
+| SPDX-License-Identifier: GPL-3.0-or-later
+
 .text
     .globl _render_scanlines_rows
     .extern _plasma_palette_rows

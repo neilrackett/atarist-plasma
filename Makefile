@@ -1,3 +1,6 @@
+# Copyright (C) 2026 Neil Rackett
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 CC      = m68k-atari-mint-gcc
 AS      = m68k-atari-mint-as
 LIBCMINI = /freemint/libcmini/lib
