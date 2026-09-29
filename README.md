@@ -1,6 +1,8 @@
 # Atari ST Mega Plasma
 
-Have you ever dreamed of displaying 3,000 colours on screen at once on your Atari STE? Well, a mere 37 years after the STE was released, here's a scanline-blasting plasma demo that will bring your dream to life.
+Have you ever dreamed of displaying 3,000 colours on screen at once on your Atari STE? Well, a mere 37 years after the STE was released, here's some scanline-blasting plasma demos that will bring your dream to life.
+
+Created by [Neil Rackett](https://neilrackett.com/atarist).
 
 Enjoy!
 
