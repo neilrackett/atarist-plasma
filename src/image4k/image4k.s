@@ -1,30 +1,18 @@
-; image4k.s -- per-scanline palette picture viewer for the Atari ST/STE,
-; using the MD/4000 raster engine.
+; image4k.s -- per-scanline palette picture viewer for the Atari ST/STE.
 ;
 ; Copyright (C) 2026 Neil Rackett
 ; SPDX-License-Identifier: GPL-3.0-or-later
 ;
-; A plain .TOS program. No cartridge, no SidecarTridge, no hard disk --
-; the pictures are baked in and the whole thing is the raster engine plus
-; about a hundred instructions of housekeeping.
+; A plain .TOS program with the pictures baked in: the whole thing is the
+; raster engine plus about a hundred instructions of housekeeping.
 ;
-; This exists because none of what MD/4000 does to the SHIFTER needs the
-; cartridge: per-scanline palettes are pure m68k. What needs the
-; cartridge is generating content faster than an ST can. A still picture
-; isn't that, so a still picture belongs here.
-;
-; The palette engine is raster.s, a VERBATIM copy of MD/4000's
-; target/atarist/src/inc/raster.s -- the same file the microfirmware
-; assembles and the same file the Hatari harness validates.
+; The palette engine is raster.s -- the same file the Hatari harness in
+; tools/rastertest validates.
 ;
 ; Build one .TOS per engine with -DSEGMENTS=1|2|3 (see the Makefile):
 ;   1 -> 16 colours a row, 3200 a picture   (the validated engine)
 ;   2 -> 32 colours a row, 6400 a picture   (experimental)
 ;   3 -> 48 colours a row, 9600 a picture   (experimental)
-;
-; Three palettes a row is only possible here. It needs a 19200-byte
-; palette table, which overruns the cartridge's shared region but is
-; nothing at all in ST RAM.
 ;
 ; Keys:
 ;   Space / Return   next picture

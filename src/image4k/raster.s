@@ -1,4 +1,4 @@
-; raster.s -- MD/4000 per-scanline palette engine.
+; raster.s -- image4k per-scanline palette engine.
 ;
 ; Copyright (C) 2026 Neil Rackett
 ; SPDX-License-Identifier: GPL-3.0-or-later
@@ -7,12 +7,12 @@
 ; horizontal border, so every row of a 320x200 low-res picture gets its
 ; own 16 colours. 200 rows x 16 entries = up to 3200 colour slots drawn
 ; from the STE's 4096 (a plain ST sees the RGB333 truncation of the same
-; palette words -- see PALETTE_STE_RGB in tools/img_to_md4000.py).
+; palette words -- see encode_palette_word in tools/convert.py).
 ;
 ; This file is shared VERBATIM between two programs:
-;   - target/atarist/src/userfw.s     the shipping microfirmware
-;   - tools/rastertest/rastertest.s   a standalone .TOS used to validate
-;                                     the timing under Hatari
+;   - image4k.s                       the viewer
+;   - tools/rastertest/rastertest.s   a harness used to validate the
+;                                     timing under Hatari
 ; so what gets tested in the emulator is literally what runs on the ST.
 ;
 ; --- How the timing works -------------------------------------------
@@ -62,16 +62,16 @@
 ; From there a nop sled positions the first MOVEM pair so it lands in
 ; the border. The sled is entered via `jmp (a4)`, so the phase is a
 ; RUNTIME value, not an assembly-time one -- the picture can be nudged
-; left/right on real hardware without rebuilding (see RASTER_PHASE in
-; the microfirmware, tunable from the ST keyboard).
+; left/right on real hardware without rebuilding (image4k.s nudges it
+; with the cursor keys).
 
 RASTER_LINES          equ 200                 ; displayed rows
 RASTER_PAL_BYTES      equ 32                  ; 16 words = one palette
 RASTER_SEG_BYTES      equ RASTER_PAL_BYTES    ; ...per segment
 
 ; Table sizes. One-segment mode is 200 palettes; two-segment mode is
-; 200 pairs (A then B, row-major), so the RP publishes whichever the
-; live mode wants and the m68k walks it with the matching stride.
+; 200 pairs (A then B, row-major) and three-segment mode 200 triples,
+; each walked with the matching stride.
 RASTER_TABLE1_BYTES   equ (RASTER_LINES * RASTER_PAL_BYTES)       ; 6400
 RASTER_TABLE2_BYTES   equ (RASTER_LINES * RASTER_PAL_BYTES * 2)   ; 12800
 RASTER_TABLE3_BYTES   equ (RASTER_LINES * RASTER_PAL_BYTES * 3)   ; 19200
@@ -159,11 +159,9 @@ RASTER_MFP_IMRB       equ $FFFFFA15
 ;--------------------------------------------------------------------
 ; raster_run -- paint one frame's worth of per-scanline palettes.
 ;
-; In:   A2   = base of the palette table (in ST RAM or, as here, in the
-;              cart shared region -- cart reads run at full 68000 speed,
-;              so both cost the same).
+; In:   A2   = base of the palette table.
 ;       D0.w = phase, 0..RASTER_SLED_NOPS (out of range -> default).
-;       D1.w = segments per row: 1 or 2 (anything else -> 1).
+;       D1.w = segments per row: 1, 2 or 3 (anything else -> 1).
 ;       SR   = interrupts masked at level 7. NOT done here: the caller
 ;              usually has other things to mask/restore around this.
 ;
@@ -251,7 +249,7 @@ raster_line:
 ;
 ; That 60-pixel band is not wasted -- it is simply a region where the
 ; live palette is a known mix of A and B, and the converter models it
-; exactly (see SEGMENT_SWITCH_X in tools/img_to_md4000.py, which is
+; exactly (see SEGMENT_SWITCH_X in tools/convert.py, which is
 ; calibrated against Hatari rather than assumed). Up to 32 colours per
 ; row, 6400 per picture.
 ;
@@ -339,7 +337,7 @@ raster2_line:
 ; the beam is at the top of the display, sixty-odd lines past it.
 ;
 ; The caller must have a bare-RTE handler on the HBL vector ($68).
-; userfw.s already stubs it; the standalone harness installs its own.
+; image4k.s and the harness both install their own.
 ;
 ; Costs one scanline -- the wake is the NEXT line boundary, not this one.
 ;
@@ -380,10 +378,6 @@ raster_lock_sync:
 ;
 ; Table layout is row-major triples: A0 B0 C0 A1 B1 C1 ... and, as in
 ; raster_run2, rows 0 and 1 get segment A only.
-;
-; This does NOT fit the cartridge shared region -- 19200 bytes of table
-; runs past the framebuffer -- so it is for the standalone builds, where
-; the table lives in ST RAM and there is no such limit.
 ;--------------------------------------------------------------------
 raster_run3:
     lea     RASTER_PALETTE_BASE.w, a1

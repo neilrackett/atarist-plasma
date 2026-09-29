@@ -1,14 +1,7 @@
 # image4k
 
-Plain `.TOS` picture viewers for the Atari ST/STE, using the per-scanline
-palette engine from MD/4000. **No cartridge, no SidecarTridge, no hard
-disk** — the pictures are baked in.
-
-MD/4000 is a SidecarTridge Multi-device microfirmware, but none of what it
-does to the shifter needs the cartridge; per-scanline palettes are pure
-m68k. What needs the cartridge is *generating* content faster than an ST
-can, and a still picture isn't that. So the still pictures live here, and
-the cartridge gets on with something it's actually needed for.
+Plain `.TOS` picture viewers for the Atari ST/STE that give every scanline
+its own palette. No hard disk needed: the pictures are baked in.
 
 ## The builds
 
@@ -31,11 +24,9 @@ Measured on the bundled pictures, distinct colours actually used:
 | Balloons | 555 | 735 | 850 |
 | Lago di Braies | 423 | 568 | 641 |
 
-**Three palettes a row is only possible here.** It needs a 19,200-byte
-palette table, which overruns the cartridge's shared region but is
-nothing at all in ST RAM. 48 colours a row is also the ceiling — a fourth
-palette needs 608 cycles of `MOVEM` in a 512-cycle scanline. That it's
-the same number Spectrum 512 reached is not a coincidence.
+**48 colours a row is the ceiling.** A fourth palette needs 608 cycles of
+`MOVEM` in a 512-cycle scanline. That it's the same number Spectrum 512
+reached is not a coincidence.
 
 ## Keys
 
@@ -47,17 +38,17 @@ the same number Spectrum 512 reached is not a coincidence.
 
 ## Status
 
-**`IMAGE4K1.TOS` is the solid one.** It's the engine validated at RMS 0.00
-against the reference on both ST and STE, and it renders cleanly.
+**`IMAGE4K1.TOS` is the solid one.** Under Hatari it renders the picture
+exactly (RMS 0.00 against the converter's reference) on both ST and STE.
 
 `IMAGE4K2` and `IMAGE4K3` are experimental and will show scattered colour
-artefacts. The engines themselves are exact — MD/4000's
-`tools/rastertest/solve_offset.py` shows the emulator reproducing the
-reference with *zero* error at every phase, once you know where the
-mid-row change-over landed. The problem is that it doesn't land in the
-same place twice: the beam lock only resolves the start of the display to
-within a poll iteration, so the bands wander by up to ~20 pixels between
-runs, while the picture data is dithered against one fixed assumption.
+artefacts. The engines themselves are exact: `tools/rastertest/solve_offset.py`
+shows the emulator reproducing the reference with *zero* error at every
+phase, once you know where the mid-row change-over landed. The problem is
+that it doesn't land in the same place twice: the beam lock only resolves
+the start of the display to within a poll iteration, so the bands wander
+by up to ~20 pixels between runs, while the picture data is dithered
+against one fixed assumption.
 
 One palette a row is immune, because its write only has to land somewhere
 in a 130-cycle border. Two and three are not, because their writes land
@@ -78,23 +69,49 @@ is ~156 KB plus a 32 KB screen). Built with `vasm`/`vlink` via
 
 ## Source
 
-- `image4k.s` — the viewer.
-- `raster.s` — the engine: a **verbatim** copy of MD/4000's
-  `target/atarist/src/inc/raster.s`, the same file the microfirmware
-  assembles and the same file the Hatari harness validates. Keep it
-  verbatim; to pick up engine changes, copy it over again.
-- `pictures/1`, `pictures/2`, `pictures/3` — the converted pictures, one
+- `image4k.s`: the viewer.
+- `raster.s`: the per-scanline palette engine. The Hatari harness
+  assembles the same file, so what's tested is what runs.
+- `pictures/1`, `pictures/2`, `pictures/3`: the converted pictures, one
   set per engine, because the pixels are dithered against the palettes.
+- `photos/`: where the source photographs go. They aren't committed; see
+  [photos/README.md](photos/README.md).
+- `tools/`: everything used to make and check the pictures, below.
 
-The source photographs are stock images that aren't redistributed, so
-the converted pictures are committed instead. To regenerate them, put the
-photographs where MD/4000's `assets/source/README.md` says, then run this
-on the host (it needs Python 3 with numpy and Pillow):
+## Tools
+
+These run on the host rather than under `stcmd`, and need Python 3 with
+numpy and Pillow. The Hatari ones also need
+[Hatari](https://www.hatari-emulator.org) and a TOS ROM image (set
+`HATARI` and `TOS_ROM` if they aren't found).
+
+**Pictures.** `tools/convert.py` turns a photograph into a `.scr` screen
+and `.pal` palette table for 1, 2 or 3 palettes a row: per-row k-means,
+Floyd-Steinberg dithering against the palette that's live at each pixel,
+and an STE palette encoding that degrades gracefully on a plain ST.
+`tools/pictures.sh` runs it over the photographs in `photos/` to
+regenerate `pictures/`:
 
 ```sh
-src/image4k/pictures.sh        # all three
-src/image4k/pictures.sh 1      # just one
+src/image4k/tools/pictures.sh        # all three engines
+src/image4k/tools/pictures.sh 1      # just one
 ```
 
-It uses MD/4000's converter, and looks for an `md-4000` checkout
-alongside this one; set `MD4000` to point it somewhere else.
+**Validation.** `tools/rastertest/` builds a harness `.TOS` that
+includes `raster.s` verbatim, sweeps the phase under Hatari, and scores
+each screenshot against the exact image the converter says the ST should
+show. A good result is RMS 0.00 with 0 bad rows; re-run it after any
+change to `raster.s`:
+
+```sh
+src/image4k/tools/rastertest/sweep.sh balloons       # STE
+src/image4k/tools/rastertest/sweep.sh balloons st    # plain ST
+```
+
+**Calibration.** With more than one palette a row, the converter has to
+know the pixel where each palette entry changes over (`SEGMENT_SWITCH_X`
+in `convert.py`). `tools/rastertest/calibrate.py 2` (or `3`) measures it
+under Hatari, and `tools/rastertest/solve_offset.py` reports how far a
+sweep's bands landed from where the converter assumed.
+
+Everything they build goes in `obj/rastertest`.

@@ -1,3 +1,5 @@
 .DS_Store
 /obj
 /dist
+# Source photographs are not redistributed -- see src/image4k/photos/README.md
+/src/image4k/photos/*.jpg

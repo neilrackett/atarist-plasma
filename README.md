@@ -28,7 +28,7 @@ Animated 3x3 gradient for ~Atari Mega STE~ any ST, STE or Mega STE
 
 <img src="./docs/image4k3.png" width="640" height="400" />
 
-Photo viewers built on the per-scanline palette engine from MD/4000, with 1, 2 or 3 palettes per row: 16, 32 or 48 colours on every row, for up to 3,200, 6,400 or 9,600 per picture. `IMAGE4K1` is solid, `IMAGE4K2` and `IMAGE4K3` are experimental; see [src/image4k](src/image4k/README.md) for the details.
+To see if I could replicate Spectrum 512's palette tricks to display images in the STE's full 4096 colours, I created 3 photo viewers that implement up to 3 palettes per scanline, giving us 16, 32 or 48 colours on every row, or up to 3,200, 6,400 or 9,600 colour options per picture. `IMAGE4K1` is solid, `IMAGE4K2` and `IMAGE4K3` are experimental; see [src/image4k](src/image4k/README.md) for the details.
 
 - Space / Return: Next picture
 - ← / →: Nudge the beam phase
