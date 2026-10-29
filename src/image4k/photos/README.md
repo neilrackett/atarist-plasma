@@ -12,6 +12,8 @@ To regenerate the pictures, put these files in this folder and run
 | --- | --- | --- |
 | `balloons.jpg` | `landscape-morning-fog-mountains-with-hot-air-balloons-sunrise.jpg` | Freepik |
 | `braies.jpg` | `pietro-de-grandi-T7K4aEPoGGk-unsplash.jpg` | Unsplash — Pietro De Grandi |
+| `flower.jpg` | `sharon-pittaway-iMdsjoiftZo-unsplash.jpg` | Unsplash — Sharon Pittaway |
+| `rainbow.jpg` | `daniele-levis-pelusi-UUjxTEET0c0-unsplash.jpg` | Unsplash — Daniele Levis Pelusi |
 | `spectrum.jpg` | `3d-geometric-abstract-background.jpg` | Freepik |
 
 Any resolution and aspect works: the converter crops to fill and resizes.

@@ -25,10 +25,10 @@ photos="${PHOTOS:-$image4k/photos}"
 segs=("$@")
 [ ${#segs[@]} -eq 0 ] && segs=(1 2 3)
 
-# Three pictures: at three palettes a row that's a ~156 KB .TOS, and a
+# Five pictures: at three palettes a row that's a ~258 KB .TOS, and a
 # 512 KB ST has about 400 KB of TPA to play with. Keep in step with
 # pic_table in image4k.s and IMAGE4K_PICTURES in the Makefile.
-pictures=(balloons braies spectrum)
+pictures=(balloons braies flower rainbow spectrum)
 
 for n in "${segs[@]}"; do
     echo "=== $n palette(s) per scanline ==="

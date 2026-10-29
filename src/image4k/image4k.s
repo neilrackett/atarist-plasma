@@ -286,11 +286,13 @@ pic_table:
     dc.l    pic0_scr, pic0_pal
     dc.l    pic1_scr, pic1_pal
     dc.l    pic2_scr, pic2_pal
-PIC_COUNT             equ 3
+    dc.l    pic3_scr, pic3_pal
+    dc.l    pic4_scr, pic4_pal
+PIC_COUNT             equ 5
 
 ; Picked up from pictures/SEGMENTS/, which the Makefile puts on the
 ; include path -- the pixels are dithered against the palettes, so each
-; engine has its own conversion of the same three photographs.
+; engine has its own conversion of the same five photographs.
 pic0_scr:
     incbin  "balloons.scr"
 pic0_pal:
@@ -300,8 +302,16 @@ pic1_scr:
 pic1_pal:
     incbin  "braies.pal"
 pic2_scr:
-    incbin  "spectrum.scr"
+    incbin  "flower.scr"
 pic2_pal:
+    incbin  "flower.pal"
+pic3_scr:
+    incbin  "rainbow.scr"
+pic3_pal:
+    incbin  "rainbow.pal"
+pic4_scr:
+    incbin  "spectrum.scr"
+pic4_pal:
     incbin  "spectrum.pal"
     even
 

@@ -21,8 +21,10 @@ Measured on the bundled pictures, distinct colours actually used:
 | picture | 1 palette | 2 palettes | 3 palettes |
 | --- | --- | --- | --- |
 | Spectrum | 866 | 1,566 | **1,825** |
+| Flower | 749 | 1,126 | 1,263 |
 | Balloons | 555 | 735 | 850 |
 | Lago di Braies | 423 | 568 | 641 |
+| Rainbow | 318 | 456 | 494 |
 
 **48 colours a row is the ceiling.** A fourth palette needs 608 cycles of
 `MOVEM` in a 512-cycle scanline. That it's the same number Spectrum 512
@@ -64,7 +66,7 @@ that's the answer.
 ## Requirements
 
 Colour monitor, low resolution, PAL. 512 KB is enough (the largest build
-is ~156 KB plus a 32 KB screen). Built with `vasm`/`vlink` via
+is ~258 KB plus a 32 KB screen). Built with `vasm`/`vlink` via
 [atarist-toolkit-docker](https://github.com/sidecartridge/atarist-toolkit-docker).
 
 ## Source

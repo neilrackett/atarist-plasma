@@ -21,7 +21,7 @@ DEPS = $(OBJS_PLASMA1:.o=.d) $(OBJS_PLASMA2:.o=.d)
 
 # IMAGE4K1-3.TOS: one build of image4k per palette engine (palettes per row)
 IMAGE4K_DIR      = $(SRCDIR)/image4k
-IMAGE4K_PICTURES = balloons braies spectrum
+IMAGE4K_PICTURES = balloons braies flower rainbow spectrum
 IMAGE4K_TARGETS  = $(DISTDIR)/IMAGE4K1.TOS $(DISTDIR)/IMAGE4K2.TOS $(DISTDIR)/IMAGE4K3.TOS
 IMAGE4K_OBJS     = $(OBJDIR)/image4k/image4k1.o $(OBJDIR)/image4k/image4k2.o $(OBJDIR)/image4k/image4k3.o
 
