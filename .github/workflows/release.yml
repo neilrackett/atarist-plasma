@@ -1,0 +1,88 @@
+name: Release
+
+# Rolling release: build the five programs, move the "latest" tag onto
+# the commit built, and replace their files on the "latest" release.
+# The release's title and notes are left exactly as they are -- `gh
+# release upload` touches only the files named -- and the names never
+# change, so a download link handed to someone keeps working.
+
+on:
+  # Anything landing on main is a release: a merge, or a direct push.
+  push:
+    branches:
+      - main
+    # A prose-only push cannot change the programs, so it cuts no
+    # release. workflow_dispatch forces one by hand.
+    paths-ignore:
+      - '**.md'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Two pushes in quick succession would otherwise race to move the tag
+# and replace the files. Newest commit wins instead.
+concurrency:
+  group: release
+  cancel-in-progress: true
+
+env:
+  # stcmd runs docker with -it unless this is set, and a runner has no
+  # terminal.
+  STCMD_NO_TTY: 1
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    # The push trigger already filters to main; this is what stops a
+    # manual dispatch from some other branch releasing it.
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v5
+
+      - name: Install the Atari ST toolkit
+        # Generates /usr/local/bin/stcmd, which runs the build in a
+        # container with gcc, libcmini, vasm and vlink. The installer
+        # comes through GitHub's API (gh), with the plain download as
+        # the fallback, to a file and then run, so an error page is
+        # never piped into bash as a script.
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download latest -R sidecartridge/atarist-toolkit-docker \
+              -p install_atarist_toolkit_docker.sh -D "$RUNNER_TEMP" \
+            || curl -fsSL --retry 5 --retry-all-errors --retry-delay 10 \
+              -o "$RUNNER_TEMP/install_atarist_toolkit_docker.sh" \
+              https://github.com/sidecartridge/atarist-toolkit-docker/releases/latest/download/install_atarist_toolkit_docker.sh
+          bash "$RUNNER_TEMP/install_atarist_toolkit_docker.sh"
+
+      - name: Build
+        # The command the README documents. IMAGE4K is assembled from
+        # the converted pictures in src/image4k/pictures, which are in
+        # the repository; the source photographs are not needed.
+        run: stcmd make
+
+      - name: Move the latest tag onto this commit
+        # The "latest" release is attached to this tag, so moving it
+        # keeps the release's source link pointing at the commit the
+        # files were built from. Through the API rather than `git
+        # push`, which is refused for a commit that touches
+        # .github/workflows when the token has no workflow scope. PATCH
+        # first because the tag already exists; POST covers a
+        # repository where it does not.
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api -X PATCH "repos/$GITHUB_REPOSITORY/git/refs/tags/latest" \
+            -f sha="$GITHUB_SHA" -F force=true --silent \
+            || gh api -X POST "repos/$GITHUB_REPOSITORY/git/refs" \
+                 -f ref=refs/tags/latest -f sha="$GITHUB_SHA" --silent
+
+      - name: Replace the programs on the latest release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload latest --clobber --repo "$GITHUB_REPOSITORY" \
+            dist/PLASMA1.TOS dist/PLASMA2.TOS \
+            dist/IMAGE4K1.TOS dist/IMAGE4K2.TOS dist/IMAGE4K3.TOS
